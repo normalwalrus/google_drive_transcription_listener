@@ -1,0 +1,40 @@
+
+2025-03-13 13:26:56.048629 : DH Transcription Service started up! 
+
+2025-03-13 13:30:15.522108 : DH Transcription Service started up! 
+
+2025-03-13 13:30:50.089993 : DH Transcription Service started up! 
+
+2025-03-13 13:31:47.783516 : DH Transcription Service started up! 
+
+2025-03-13 13:34:15.049441 : DH Transcription Service started up! 
+
+2025-03-13 13:35:45.459342 : DH Transcription Service started up! 
+
+2025-03-13 13:44:03.345369 : DH Transcription Service started up! 
+
+2025-03-13 13:45:03.443734 : DH Transcription Service started up! 
+
+2025-03-13 13:45:29.073495 : DH Transcription Service started up! 
+
+2025-03-13 13:46:27.732954 : trump_full1.wav is being downloaded 
+2025-03-13 13:46:32.871948 : trump_full1.wav has been downloaded, transcription in progress 
+2025-03-13 13:46:48.766505 : trump_full1.wav has been transcribed, text file being uploaded to Outputs folder 
+2025-03-13 13:46:53.026506 : outputs/trump_full1.txt has been uploaded! 
+
+2025-03-13 13:51:45.977583 : DH Transcription Service started up! 
+
+2025-03-13 13:57:03.845641 : DH Transcription Service started up! 
+
+2025-03-13 13:59:10.986872 : DH Transcription Service started up! 
+
+2025-03-13 13:59:15.944520 : test_1.wav is being downloaded 
+2025-03-13 13:59:19.436463 : test_1.wav has been downloaded, transcription in progress 
+2025-03-13 13:59:23.985553 : test_1.wav has been transcribed, text file being uploaded to Outputs folder 
+2025-03-13 13:59:28.949479 : outputs/test_1.txt has been uploaded! 
+
+2025-03-13 13:59:30.833603 : denoised_clean_audio_static_noise_SNR0.wav is being downloaded 
+2025-03-13 13:59:34.297797 : denoised_clean_audio_static_noise_SNR0.wav has been downloaded, transcription in progress 
+2025-03-13 13:59:37.280235 : denoised_clean_audio_static_noise_SNR0.wav has been transcribed, text file being uploaded to Outputs folder 
+2025-03-13 13:59:40.967382 : outputs/denoised_clean_audio_static_noise_SNR0.txt has been uploaded! 
+

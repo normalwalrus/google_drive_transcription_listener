@@ -1,0 +1,17 @@
+2025-03-13 14:02:13.283066 : DH Transcription Service started up! 
+
+2025-03-13 14:02:18.218712 : trump_full1.wav is being downloaded 
+2025-03-13 14:02:22.615592 : trump_full1.wav has been downloaded, transcription in progress 
+2025-03-13 14:02:36.523486 : trump_full1.wav has been transcribed, text file being uploaded to Outputs folder 
+2025-03-13 14:02:40.095323 : outputs/trump_full1.txt has been uploaded! 
+
+2025-03-13 14:02:53.177551 : denoised_clean_audio_static_noise_SNR0.wav is being downloaded 
+2025-03-13 14:02:56.526346 : denoised_clean_audio_static_noise_SNR0.wav has been downloaded, transcription in progress 
+2025-03-13 14:02:59.525589 : denoised_clean_audio_static_noise_SNR0.wav has been transcribed, text file being uploaded to Outputs folder 
+2025-03-13 14:03:03.377766 : outputs/denoised_clean_audio_static_noise_SNR0.txt has been uploaded! 
+
+2025-03-13 14:05:37.390045 : 10180857.wav is being downloaded 
+2025-03-13 14:05:40.875999 : 10180857.wav has been downloaded, transcription in progress 
+2025-03-13 14:05:43.676511 : 10180857.wav has been transcribed, text file being uploaded to Outputs folder 
+2025-03-13 14:05:47.526893 : outputs/10180857.txt has been uploaded! 
+

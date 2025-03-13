@@ -1,0 +1,28 @@
+services:
+  googledrive-asr-listener:
+    container_name: googledrive-asr-listener
+    image: dinohub-asr/googledrive-asr-listener:0.0.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    env_file: .env.dev
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    volumes:
+      - $PWD/asr_inference_service:/opt/app-root/asr_inference_service
+      - $PWD/google_doc_utils:/opt/app-root/google_doc_utils
+      - $PWD/pretrained_models:/opt/app-root/pretrained_models
+      - $PWD/main.py:/opt/app-root/main.py
+      - $PWD/downloads:/opt/app-root/downloads
+      - $PWD/outputs:/opt/app-root/outputs
+      - $PWD/credentials.json:/opt/app-root/credentials.json
+    command:
+      ["python3" , "main.py"]

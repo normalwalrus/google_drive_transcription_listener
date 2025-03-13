@@ -1,0 +1,7 @@
+.qodo
+pretrained_models/*
+venv/*
+downloads/*
+outputs/*
+credentials.json
+token.json
