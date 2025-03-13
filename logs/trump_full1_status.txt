@@ -1,0 +1,4 @@
+Transcription process of trump_full1:
+
+2025-03-13 17:56:31.207366 : trump_full1.wav is being downloaded 
+2025-03-13 17:56:35.695014 : trump_full1.wav has been downloaded, transcription in progress 

@@ -170,9 +170,9 @@ def upload_txt_file(file_path, folder_id, service):
     ).execute()
 
     print(f"Uploaded {uploaded_file['name']} with ID: {uploaded_file['id']}")
-    return 
+    return uploaded_file['id']
 
-def update_txt_file(file_path, folder_id, file_id, service):
+def update_txt_file(file_path, file_id, service):
     """Uploads a TXT file to a specific Google Drive folder."""
     
     file_metadata = {

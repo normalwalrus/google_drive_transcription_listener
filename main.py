@@ -20,12 +20,14 @@ load_dotenv()
 DRIVE_URL = '#'
 OUTPUTS_URL = '#'
 LOGS_URL = '#'
+AUDIO_VIDEO_URL = '#'
 
 LOCAL_DOWNLOAD_FOLDER = 'downloads'
 LOCAL_OUTPUT_FOLDER = 'outputs'
 LOCAL_LOGS_TXT_FILE = 'logs'
 SAMPLE_RATE = 16000
 ROOT_FOLDER_ID = extract_root_folder_id(DRIVE_URL)
+AUDIO_VIDEO_FOLDER_ID = extract_root_folder_id(AUDIO_VIDEO_URL)
 UPLOAD_OUTPUTS_FOLDER_ID = extract_root_folder_id(OUTPUTS_URL)
 UPLOAD_LOGS_FOLDER_ID = extract_root_folder_id(LOGS_URL)
 
@@ -33,6 +35,8 @@ STATUS_TXT_FILE = 'status.txt'
 ARCHIVE_STATUS_TXT_FILE = 'archive_status.txt'
 STATUS_TXT_ID = '#'
 ARCHIVE_STATUS_TXT_ID = '#'
+
+OVERALL_STATUS_TXT_FILE = os.path.join(LOCAL_LOGS_TXT_FILE, STATUS_TXT_FILE)
 
 model = ASRModelForInference(
     model_dir=os.getenv("PRETRAINED_MODEL_DIR"),
@@ -45,9 +49,8 @@ model = ASRModelForInference(
 
 service = authenticate()
 
-def handle_statuses(filename: str ='none', step:str  =''):
+def handle_statuses(filename: str ='none', step:str  ='', status_filepath = '', status_txt_id = STATUS_TXT_ID):
     ''' Update and upload status.txt '''
-    status_filepath = os.path.join(LOCAL_LOGS_TXT_FILE, STATUS_TXT_FILE)
     archive_status_filepath = os.path.join(LOCAL_LOGS_TXT_FILE, ARCHIVE_STATUS_TXT_FILE)
     status_message = get_status_message(filename, step=step)
 
@@ -55,14 +58,14 @@ def handle_statuses(filename: str ='none', step:str  =''):
         # Archiving old status messages
         old_messages = read_txt_file(status_filepath)
         append_text_to_txt(old_messages, archive_status_filepath)
-        update_txt_file( archive_status_filepath, UPLOAD_LOGS_FOLDER_ID, ARCHIVE_STATUS_TXT_ID, service)
+        update_txt_file( archive_status_filepath, ARCHIVE_STATUS_TXT_ID, service)
         # Upload current status messages and overwrites old ones
         write_text_to_txt(status_message, status_filepath)
-        
+        update_txt_file(status_filepath, STATUS_TXT_ID, service)
+    
     else:
         append_text_to_txt(status_message, status_filepath)
-    
-    update_txt_file(status_filepath, UPLOAD_LOGS_FOLDER_ID, STATUS_TXT_ID, service)
+        update_txt_file(status_filepath, status_txt_id, service)
     
     return
     
@@ -76,10 +79,16 @@ def audio_loop(list_of_audio_in_drive: list):
     '''
     for audio in list_of_audio_in_drive:
         if not check_if_file_in_folder(audio['name'], LOCAL_DOWNLOAD_FOLDER):
+            
+            pre, _ = os.path.splitext(audio['name'])
+            audio_status_filepath = os.path.join(LOCAL_LOGS_TXT_FILE, pre+'_status.txt')
+            write_text_to_txt(f'Transcription process of {pre}:\n\n', audio_status_filepath)
+            status_txt_id = upload_txt_file(audio_status_filepath, UPLOAD_LOGS_FOLDER_ID, service)
+            
             try:
-                handle_statuses(audio['name'], step = 'downloading')
+                handle_statuses(audio['name'], step = 'downloading', status_filepath=audio_status_filepath, status_txt_id=status_txt_id)
                 output_filepath = download_file(audio['id'], LOCAL_DOWNLOAD_FOLDER, service)
-                handle_statuses(audio['name'], step = 'downloaded')
+                handle_statuses(audio['name'], step = 'downloaded', status_filepath=audio_status_filepath, status_txt_id=status_txt_id)
                 
                 # Transcription 
                 data, samplerate = librosa.load(output_filepath)
@@ -88,15 +97,18 @@ def audio_loop(list_of_audio_in_drive: list):
                     sf.write(temp_file, y, SAMPLE_RATE)
                     temp_filepath = temp_file.name
                     transcriptions = model.diar_inference(filepath=temp_filepath)
-                    handle_statuses(audio['name'], step = 'transcribed')
+                    handle_statuses(audio['name'], step = 'transcribed', status_filepath=audio_status_filepath, status_txt_id=status_txt_id)
                 
-                pre, _ = os.path.splitext(audio['name'])
+                #
                 output_txt_path = os.path.join(LOCAL_OUTPUT_FOLDER, pre + '.txt')
                 write_text_to_txt(transcriptions, output_txt_path)
                 upload_txt_file(output_txt_path, UPLOAD_OUTPUTS_FOLDER_ID, service)
-                handle_statuses(output_txt_path, step = 'uploaded')
+                handle_statuses(output_txt_path, step = 'uploaded', status_filepath=audio_status_filepath, status_txt_id=status_txt_id)
+                handle_statuses(output_txt_path, step = 'uploaded', status_filepath=OVERALL_STATUS_TXT_FILE, status_txt_id=STATUS_TXT_ID)
+                
             except:
-                handle_statuses(audio['name'], step = 'error')
+                handle_statuses(audio['name'], step = 'error', status_filepath=pre, status_txt_id=status_txt_id)
+                
 def video_loop(list_of_mp4_in_drive: list):
     ''' 
     Video loop where checking of:
@@ -107,10 +119,15 @@ def video_loop(list_of_mp4_in_drive: list):
     '''
     for video in list_of_mp4_in_drive:
             if not check_if_file_in_folder(video['name'], LOCAL_DOWNLOAD_FOLDER):
+                pre, _ = os.path.splitext(video['name'])
+                video_status_filepath = os.path.join(LOCAL_LOGS_TXT_FILE, pre+'_status.txt')
+                write_text_to_txt(f'Transcription process of {pre}:\n\n', video_status_filepath)
+                status_txt_id = upload_txt_file(video_status_filepath, UPLOAD_LOGS_FOLDER_ID, service)
+                
                 try:
-                    handle_statuses(video['name'], step = 'downloading')
+                    handle_statuses(video['name'], step = 'downloading', status_filepath=video_status_filepath, status_txt_id=status_txt_id)
                     output_filepath = download_file(video['id'], LOCAL_DOWNLOAD_FOLDER, service)
-                    handle_statuses(video['name'], step = 'downloaded')
+                    handle_statuses(video['name'], step = 'downloaded', status_filepath=video_status_filepath, status_txt_id=status_txt_id)
                     
                     numpy_audio_array, sample_rate = audio_from_mp4(output_filepath)
                     numpy_audio_array = resample_audio_array(numpy_audio_array, sample_rate, SAMPLE_RATE)
@@ -119,15 +136,15 @@ def video_loop(list_of_mp4_in_drive: list):
                         sf.write(temp_file, numpy_audio_array, SAMPLE_RATE)
                         temp_file_path = temp_file.name
                         transcription = model.diar_inference(temp_file_path)
-                        handle_statuses(video['name'], step = 'transcribed')
+                        handle_statuses(video['name'], step = 'transcribed', status_filepath=video_status_filepath, status_txt_id=status_txt_id)
                     
-                    pre, _ = os.path.splitext(video['name'])
                     output_txt_path = os.path.join(LOCAL_OUTPUT_FOLDER, pre + '.txt')
                     write_text_to_txt(transcription, output_txt_path)
                     upload_txt_file(output_txt_path, UPLOAD_OUTPUTS_FOLDER_ID, service)
-                    handle_statuses(output_txt_path, step = 'uploaded')
+                    handle_statuses(output_txt_path, step = 'uploaded', status_filepath=video_status_filepath, status_txt_id=status_txt_id)
+                    handle_statuses(output_txt_path, step = 'uploaded', status_filepath=OVERALL_STATUS_TXT_FILE, status_txt_id=STATUS_TXT_ID)
                 except:
-                    handle_statuses(video['name'], step = 'error')
+                    handle_statuses(video['name'], step = 'error', status_filepath=video_status_filepath, status_txt_id=status_txt_id)
 
 def list_files_in_folder(service, folder_id):
     query = f"'{folder_id}' in parents"
@@ -144,11 +161,11 @@ def main():
 
     #list_files_in_folder(service, ROOT_FOLDER_ID)
     
-    list_of_audio_in_drive = get_all_audio_files(ROOT_FOLDER_ID, service)
-    list_of_mp4_in_drive = get_all_mp4_files(ROOT_FOLDER_ID, service)
+    list_of_audio_in_drive = get_all_audio_files(AUDIO_VIDEO_FOLDER_ID, service)
+    list_of_mp4_in_drive = get_all_mp4_files(AUDIO_VIDEO_FOLDER_ID, service)
     
-    print(list_of_audio_in_drive)
-    print(list_of_mp4_in_drive)
+    # print(list_of_audio_in_drive)
+    # print(list_of_mp4_in_drive)
     
     audio_loop(list_of_audio_in_drive)
     video_loop(list_of_mp4_in_drive)
@@ -157,7 +174,7 @@ def main():
 if __name__ == '__main__':
     
     # Reset the status
-    handle_statuses('', 'started_up')
+    handle_statuses('', 'started_up', OVERALL_STATUS_TXT_FILE)
     count = 0
     sleepy_time = 10
     status_update_interval_in_sec = 600
@@ -171,4 +188,4 @@ if __name__ == '__main__':
         # Heartbeat status update
         if (sleepy_time * count) >= status_update_interval_in_sec:
             count=0
-            handle_statuses()
+            handle_statuses(status_filepath=OVERALL_STATUS_TXT_FILE)

@@ -102,5 +102,5 @@ RUN ffmpeg -version
 # USER 1001
 # -------------------------------------------------------------------------------------------
 
-RUN ["python", "-c", "from pyannote.audio import Pipeline; Pipeline.from_pretrained('pyannote/speaker-diarization-3.1',use_auth_token='HF')"]
+RUN ["python", "-c", "from pyannote.audio import Pipeline; Pipeline.from_pretrained('pyannote/speaker-diarization-3.1',use_auth_token='#')"]
 RUN ["python", "-c", "from denoiser import pretrained; pretrained.dns64()"]

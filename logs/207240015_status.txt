@@ -1,0 +1,7 @@
+Transcription process of 207240015:
+
+2025-03-13 17:01:23.071362 : 207240015.WAV is being downloaded 
+2025-03-13 17:01:26.616223 : 207240015.WAV has been downloaded, transcription in progress 
+2025-03-13 17:01:31.217541 : 207240015.WAV has been transcribed, text file being uploaded to Outputs folder 
+2025-03-13 17:01:35.027030 : outputs/207240015.txt has been uploaded! 
+

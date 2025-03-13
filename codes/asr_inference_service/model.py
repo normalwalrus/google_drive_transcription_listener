@@ -50,7 +50,7 @@ class ASRModelForInference:
 
         self.timestamp_format = (
             timestamp_format
-            if timestamp_format in ["minutes", "seconds"]
+            if timestamp_format in ["minutes", "seconds","hour-minute-second"]
             else "seconds"
         )
         logging.info("Running on device: %s", device)
@@ -126,8 +126,24 @@ class ASRModelForInference:
             if self.timestamp_format == "minutes":
                 start_time = start_time / 60
                 end_time = end_time / 60
+                segment_string = f"[{start_time:.2f} - {end_time:.2f}] [{segments['speaker'][x]}] : {transcription}\n\n"
+            elif self.timestamp_format == "hour-minute-second":
+                start_time = int(start_time)
+                end_time = int(end_time)
+                
+                start_hours = start_time // 3600
+                start_minutes = (start_time % 3600) // 60
+                start_seconds = start_time % 60
+                
+                end_hours = end_time // 3600
+                end_minutes = (end_time % 3600) // 60
+                end_seconds = end_time % 60
+                
+                segment_string = f"[{start_hours:02d}:{start_minutes:02d}:{start_seconds:02d} - {end_hours:02d}:{end_minutes:02d}:{end_seconds:02d}] [{segments['speaker'][x]}] : {transcription}\n\n"       
+            else:
+                segment_string = f"[{start_time:.2f} - {end_time:.2f}] [{segments['speaker'][x]}] : {transcription}\n\n"
 
-            segment_string = f"[{start_time:.2f} - {end_time:.2f}] [{segments['speaker'][x]}] : {transcription}\n\n"
+
             final_transcription = "".join([final_transcription, segment_string])
 
         return final_transcription

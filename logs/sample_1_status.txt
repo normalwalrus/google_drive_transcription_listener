@@ -1,0 +1,7 @@
+Transcription process of sample_1:
+
+2025-03-13 17:58:28.575325 : sample_1.mp4 is being downloaded 
+2025-03-13 17:58:33.394240 : sample_1.mp4 has been downloaded, transcription in progress 
+2025-03-13 17:58:53.874794 : sample_1.mp4 has been transcribed, text file being uploaded to Outputs folder 
+2025-03-13 17:58:57.640907 : outputs/sample_1.txt has been uploaded! 
+
